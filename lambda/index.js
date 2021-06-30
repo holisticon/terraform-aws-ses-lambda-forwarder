@@ -6,7 +6,8 @@ exports.handler = function(event, context, callback) {
             fromEmail: process.env.EMAIL_FROM,
             emailBucket: process.env.EMAIL_BUCKET_NAME,
             emailKeyPrefix: process.env.EMAIL_BUCKET_PATH,
-            forwardMapping: JSON.parse(process.env.EMAIL_MAPPING)
+            forwardMapping: JSON.parse(process.env.EMAIL_MAPPING),
+            allowPlusSign: true
         }
     };
     LambdaForwarder.handler(event, context, callback, overrides);

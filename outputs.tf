@@ -8,25 +8,6 @@ output "ses_domain_identity_verification_arn" {
   value       = aws_ses_domain_identity_verification.default.arn
 }
 
-output "artifact_git_ref" {
-  description = "Git commit hash corresponding to the artifact"
-  value       = module.artifact.git_ref
-}
-
-output "artifact_file" {
-  description = "Full path to the locally downloaded artifact"
-  value       = module.artifact.file
-}
-
-output "artifact_url" {
-  description = "URL corresponding to the artifact"
-  value       = module.artifact.url
-}
-
-output "artifact_base64sha256" {
-  description = "Base64 encoded SHA256 hash of the artifact file"
-  value       = module.artifact.base64sha256
-}
 
 output "lambda_iam_policy_id" {
   description = "Lamnda IAM Policy ID"

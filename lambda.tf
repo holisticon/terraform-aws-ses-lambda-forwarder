@@ -66,21 +66,31 @@ resource "aws_iam_role_policy_attachment" "lambda" {
   policy_arn = aws_iam_policy.lambda.arn
 }
 
-module "artifact" {
-  source      = "cloudposse/module-artifact/external"
-  version     = "0.7.0"
-  filename    = var.artifact_filename
-  module_name = "terraform-aws-ses-lambda-forwarder"
-  module_path = path.module
-  url         = var.artifact_url
+resource "null_resource" "build_lambda" {
+  provisioner "local-exec" {
+    working_dir = "${path.module}/lambda"
+    command = "npm install"
+  }
+
+  triggers = {
+    rerun_every_time = "${uuid()}"
+  }
+}
+
+data "archive_file" "lambda_zip" {
+  type = "zip"
+  source_dir = "${path.module}/lambda"
+  output_path = "${path.module}/build/lambda.zip"
+
+  depends_on = [null_resource.build_lambda]
 }
 
 resource "aws_lambda_function" "default" {
-  filename         = module.artifact.file
+  filename         = "${path.module}/build/lambda.zip"
   function_name    = module.this.id
   role             = aws_iam_role.lambda.arn
   handler          = "index.handler"
-  source_code_hash = module.artifact.base64sha256
+  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
   runtime          = var.lambda_runtime
   tags             = module.this.tags
 
